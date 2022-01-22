@@ -32,16 +32,10 @@
         </rollingPolicy>
     </appender>
 
-    <!-- LOG everything at INFO or WARN level -->
+    <!-- LOG everything at INFO level -->
     <root level="INFO">
         <appender-ref ref="RollingFile" />
         <appender-ref ref="Console" />
     </root>
-
-    <!-- LOG "com.example*" at TRACE level -->
-    <logger name="com.example" level="TRACE" additivity="false">
-        <appender-ref ref="RollingFile" />
-        <appender-ref ref="Console" />
-    </logger>
 
 </configuration>

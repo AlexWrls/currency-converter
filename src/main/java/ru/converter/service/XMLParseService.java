@@ -7,8 +7,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import ru.converter.dto.XMLParseDto;
-import ru.converter.entity.CurrencyItem;
+import ru.converter.dto.XmlParseDto;
+import ru.converter.entity.Currency;
+import ru.converter.entity.Rate;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,7 +22,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class XMLParseService {
+public class XmlParseService {
     private static final String URL = "http://www.cbr.ru/scripts/XML_daily.asp";
     private static final DateTimeFormatter FORMATTER_DATE = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
@@ -30,11 +31,13 @@ public class XMLParseService {
     private static final String NAME = "Name";
     private static final String VALUE = "Value";
     private static final String ID = "ID";
+    private static final String CHAR_CODE = "CharCode";
     private static final String DATE = "Date";
 
-    public XMLParseDto parseRecourse() {
-        List<CurrencyItem> currencyItems = new ArrayList<>();
-        XMLParseDto parseDto = new XMLParseDto();
+    public XmlParseDto parseRecourse() {
+        List<Currency> currencies = new ArrayList<>();
+        List<Rate> rates = new ArrayList<>();
+        XmlParseDto parseDto = new XmlParseDto();
         Node node = getDOM();
 
         String date = node.getAttributes().getNamedItem(DATE).getNodeValue();
@@ -50,18 +53,29 @@ public class XMLParseService {
                 final String name = element.getElementsByTagName(NAME).item(0).getTextContent();
                 final String nominal = element.getElementsByTagName(NOMINAL).item(0).getTextContent();
                 final String numCode = element.getElementsByTagName(NUM_CODE).item(0).getTextContent();
-                CurrencyItem currencyItem = new CurrencyItem();
-                currencyItem.setId(id);
-                currencyItem.setNumCode(numCode);
-                currencyItem.setName(name);
-                currencyItem.setNominal(Integer.parseInt(nominal));
-                currencyItem.setValue(Double.parseDouble(value.replaceAll(",", ".")));
-                currencyItem.setCursDate(localDate);
-                currencyItems.add(currencyItem);
+                final String charCode = element.getElementsByTagName(CHAR_CODE).item(0).getTextContent();
+
+                Currency currency = new Currency();
+                currency.setId(id);
+                currency.setNumCode(numCode);
+                currency.setName(name);
+                currency.setNominal(Integer.parseInt(nominal));
+                currency.setValue(Double.parseDouble(value.replaceAll(",", ".")));
+                currency.setCharCode(charCode);
+
+                Rate rate = new Rate();
+                rate.setValue(Double.parseDouble(value.replaceAll(",", ".")));
+                rate.setCharCode(charCode);
+                rate.setCursDate(localDate);
+
+                rates.add(rate);
+                currencies.add(currency);
+
             }
         }
-        log.trace("Текущий курс валют: " + currencyItems);
-        parseDto.setCurrencyItems(currencyItems);
+        log.trace("Текущий курс валют: " + currencies);
+        parseDto.setCurrencies(currencies);
+        parseDto.setRates(rates);
         return parseDto;
     }
 

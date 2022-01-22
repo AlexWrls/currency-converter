@@ -12,25 +12,25 @@ import java.time.LocalDate;
 
 @Data
 @Entity
-@Table(name = "convert")
+@Table(name = "CONVERTS")
 public class Convert {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "ID")
     private Long id;
 
-    @Column(name = "convert_from")
+    @Column(name = "CONVERT_FROM")
     private String convertFrom;
 
-    @Column(name = "convert_to")
+    @Column(name = "CONVERT_TO")
     private String convertTo;
 
-    @Column(name = "value_from")
+    @Column(name = "VALUE_FROM")
     private double valueFrom;
 
-    @Column(name = "value_to")
+    @Column(name = "VALUE_TO")
     private double valueTo;
 
-    @Column(name = "curs_date")
+    @Column(name = "CURS_DATE")
     private LocalDate cursDate;
 }

@@ -6,32 +6,29 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.time.LocalDate;
 
 
 @Entity
 @Data
-@Table(name = "currency_item")
-public class CurrencyItem {
+@Table(name = "CURRENCYS")
+public class Currency {
     @Id
-    @Column
+    @Column(name = "ID")
     private String id;
 
-    @Column(name = "num_code")
+    @Column(name = "NUM_CODE")
     private String numCode;
 
-    @Column(name = "char_code")
+    @Column(name = "CHAR_CODE")
     private String charCode;
 
-    @Column(name = "nominal")
+    @Column(name = "NOMINAL")
     private int nominal;
 
-    @Column(name = "name")
+    @Column(name = "NAME")
     private String name;
 
-    @Column(name = "value")
+    @Column(name = "VALUE")
     private double value;
 
-    @Column(name = "curs_date")
-    private LocalDate cursDate;
 }
