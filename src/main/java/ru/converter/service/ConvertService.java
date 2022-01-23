@@ -2,19 +2,17 @@ package ru.converter.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.converter.dto.StatisticDto;
 import ru.converter.entity.Convert;
+import ru.converter.entity.Currency;
 import ru.converter.entity.Rate;
 import ru.converter.repository.ConvertRepo;
+import ru.converter.repository.CurrencyRepo;
 import ru.converter.repository.RateRepo;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Сервис конвертации валют
@@ -25,12 +23,14 @@ public class ConvertService {
     private final ConvertRepo convertRepo;
     private final RateRepo rateRepo;
     private final XmlParseService xmlParseService;
+    private final CurrencyRepo currencyRepo;
 
     @Autowired
-    public ConvertService(ConvertRepo convertRepo, RateRepo rateRepo, XmlParseService xmlParseService) {
+    public ConvertService(ConvertRepo convertRepo, RateRepo rateRepo, XmlParseService xmlParseService, CurrencyRepo currencyRepo) {
         this.convertRepo = convertRepo;
         this.rateRepo = rateRepo;
         this.xmlParseService = xmlParseService;
+        this.currencyRepo = currencyRepo;
     }
 
     /**
@@ -68,6 +68,10 @@ public class ConvertService {
         return valueFrom;
     }
 
+    public List<Currency> getCurrency() {
+        return currencyRepo.findAll();
+    }
+
     /**
      * Расчет предобразования вылюты
      *
@@ -77,7 +81,7 @@ public class ConvertService {
      * @return конверитированая сумма
      */
     private double calculateConvert(Rate rateTo, Rate rateFrom, double valTo) {
-        double val = (rateTo.getValue() / rateFrom.getValue()) * valTo;
+        double val = (rateFrom.getValue() / rateTo.getValue()) * valTo;
         BigDecimal result = new BigDecimal(val);
         result = result.setScale(3, RoundingMode.DOWN);
         return Double.parseDouble(String.valueOf(result));

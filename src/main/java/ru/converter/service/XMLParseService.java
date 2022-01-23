@@ -46,41 +46,44 @@ public class XmlParseService {
         List<Rate> rates = new ArrayList<>();
         XmlParseDto parseDto = new XmlParseDto();
         Node node = getDOM();
+        try {
+            String date = node.getAttributes().getNamedItem(DATE).getNodeValue();
+            LocalDate localDate = LocalDate.parse(date, FORMATTER_DATE);
 
-        String date = node.getAttributes().getNamedItem(DATE).getNodeValue();
-        LocalDate localDate = LocalDate.parse(date, FORMATTER_DATE);
+            final NodeList nodes = node.getChildNodes();
+            for (int i = 0; i < nodes.getLength(); i++) {
+                final Node valCurse = nodes.item(i);
+                if (valCurse.getNodeType() == Node.ELEMENT_NODE) {
+                    final String id = valCurse.getAttributes().getNamedItem(ID).getNodeValue();
+                    Element element = (Element) valCurse;
+                    final String value = element.getElementsByTagName(VALUE).item(0).getTextContent();
+                    final String name = element.getElementsByTagName(NAME).item(0).getTextContent();
+                    final String nominal = element.getElementsByTagName(NOMINAL).item(0).getTextContent();
+                    final String numCode = element.getElementsByTagName(NUM_CODE).item(0).getTextContent();
+                    final String charCode = element.getElementsByTagName(CHAR_CODE).item(0).getTextContent();
+                    double val = Double.parseDouble(value.replaceAll(",", "."));
+                    final int nom = Integer.parseInt(nominal);
 
-        final NodeList nodes = node.getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            final Node valCurse = nodes.item(i);
-            if (valCurse.getNodeType() == Node.ELEMENT_NODE) {
-                final String id = valCurse.getAttributes().getNamedItem(ID).getNodeValue();
-                Element element = (Element) valCurse;
-                final String value = element.getElementsByTagName(VALUE).item(0).getTextContent();
-                final String name = element.getElementsByTagName(NAME).item(0).getTextContent();
-                final String nominal = element.getElementsByTagName(NOMINAL).item(0).getTextContent();
-                final String numCode = element.getElementsByTagName(NUM_CODE).item(0).getTextContent();
-                final String charCode = element.getElementsByTagName(CHAR_CODE).item(0).getTextContent();
-                double val = Double.parseDouble(value.replaceAll(",", "."));
-                final int nom = Integer.parseInt(nominal);
+                    Currency currency = new Currency();
+                    currency.setId(id);
+                    currency.setNumCode(numCode);
+                    currency.setName(name);
+                    currency.setNominal(nom);
+                    currency.setValue(val);
+                    currency.setCharCode(charCode);
 
-                Currency currency = new Currency();
-                currency.setId(id);
-                currency.setNumCode(numCode);
-                currency.setName(name);
-                currency.setNominal(nom);
-                currency.setValue(val);
-                currency.setCharCode(charCode);
+                    Rate rate = new Rate();
+                    rate.setValue(val / nom);
+                    rate.setCharCode(charCode);
+                    rate.setCursDate(localDate);
 
-                Rate rate = new Rate();
-                rate.setValue(val/nom);
-                rate.setCharCode(charCode);
-                rate.setCursDate(localDate);
+                    rates.add(rate);
+                    currencies.add(currency);
 
-                rates.add(rate);
-                currencies.add(currency);
-
+                }
             }
+        } catch (Exception e) {
+            log.error("Ошибка разбора DOM дерева по адресу: " + URL);
         }
         log.trace("Текущий курс валют: " + currencies);
         parseDto.setCurrencies(currencies);
@@ -92,10 +95,15 @@ public class XmlParseService {
      * Получить актуальную дату для списока валют с сайта ЦБРФ
      */
     public LocalDate getCursDate() {
-        Node node = getDOM();
-        String date = node.getAttributes().getNamedItem("Date").getNodeValue();
-        log.trace("Текущая дата валюты: " + date);
-        return LocalDate.parse(date, FORMATTER_DATE);
+        try {
+            Node node = getDOM();
+            String date = node.getAttributes().getNamedItem("Date").getNodeValue();
+            log.trace("Текущая дата валюты: " + date);
+            return LocalDate.parse(date, FORMATTER_DATE);
+        } catch (Exception e) {
+            log.error("Ошибка разбора DOM дерева при получении актуальной даты курсов валют по адресу: " + URL);
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     /**

@@ -8,10 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.converter.dto.ConvertDto;
-import ru.converter.dto.XmlParseDto;
 import ru.converter.service.ConvertService;
 import ru.converter.service.StatisticService;
-import ru.converter.service.XmlParseService;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -22,22 +20,18 @@ import java.util.Objects;
 @Controller
 public class MainController {
 
-    private final XmlParseService parseService;
     private final ConvertService convertService;
     private final StatisticService statisticService;
 
     @Autowired
-    public MainController(XmlParseService parseService, ConvertService convertService, StatisticService statisticService) {
-        this.parseService = parseService;
+    public MainController(ConvertService convertService, StatisticService statisticService) {
         this.convertService = convertService;
         this.statisticService = statisticService;
     }
 
     @GetMapping("/")
     public String index(Model model, ConvertDto convert) {
-        XmlParseDto data = parseService.parseRecourse();
-        model.addAttribute("currency", data.getCurrencies());
-        model.addAttribute("rate", data.getRates());
+        model.addAttribute("currency", convertService.getCurrency());
         model.addAttribute("convert", convert);
         if (Objects.isNull(model.getAttribute("statistic"))) {
             model.addAttribute("statistic", statisticService.getStatByDate(LocalDate.now().minusWeeks(1), LocalDate.now()));
