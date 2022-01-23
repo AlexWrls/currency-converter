@@ -14,10 +14,11 @@ import ru.converter.service.StatisticService;
 import ru.converter.service.XmlParseService;
 
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.Objects;
 
-
+/**
+ * Контроллер взаимодействия с view
+ */
 @Controller
 public class MainController {
 
