@@ -6,6 +6,9 @@ import ru.converter.dto.XmlParseDto;
 import ru.converter.repository.CurrencyRepo;
 import ru.converter.repository.RateRepo;
 
+/**
+ * Сервис сохранения списка актуальных валют
+ */
 @Service
 public class SaveXmlParseService {
 

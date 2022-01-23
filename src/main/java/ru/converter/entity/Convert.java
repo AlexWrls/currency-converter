@@ -10,6 +10,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDate;
 
+/**
+ * Сущьность для истории конвертации
+ */
 @Data
 @Entity
 @Table(name = "CONVERTS")

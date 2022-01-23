@@ -7,7 +7,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-
+/**
+ * Сущьность курса валют
+ */
 @Entity
 @Data
 @Table(name = "CURRENCYS")

@@ -7,6 +7,9 @@ import ru.converter.entity.Rate;
 
 import java.util.List;
 
+/**
+ * Класс для заполнеия при разборе курса валют с сайта ЦБРФ
+ */
 @Getter
 @Setter
 public class XmlParseDto {

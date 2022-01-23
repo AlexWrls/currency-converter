@@ -20,9 +20,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Сервис разбора списока актуальных валют и их курсов с сайта ЦБРФ
+ */
 @Slf4j
 @Service
 public class XmlParseService {
+
     private static final String URL = "http://www.cbr.ru/scripts/XML_daily.asp";
     private static final DateTimeFormatter FORMATTER_DATE = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
@@ -34,6 +38,9 @@ public class XmlParseService {
     private static final String CHAR_CODE = "CharCode";
     private static final String DATE = "Date";
 
+    /**
+     * Разбор списока актуальных валют и их курсов с сайта ЦБРФ
+     */
     public XmlParseDto parseRecourse() {
         List<Currency> currencies = new ArrayList<>();
         List<Rate> rates = new ArrayList<>();
@@ -54,17 +61,19 @@ public class XmlParseService {
                 final String nominal = element.getElementsByTagName(NOMINAL).item(0).getTextContent();
                 final String numCode = element.getElementsByTagName(NUM_CODE).item(0).getTextContent();
                 final String charCode = element.getElementsByTagName(CHAR_CODE).item(0).getTextContent();
+                double val = Double.parseDouble(value.replaceAll(",", "."));
+                final int nom = Integer.parseInt(nominal);
 
                 Currency currency = new Currency();
                 currency.setId(id);
                 currency.setNumCode(numCode);
                 currency.setName(name);
-                currency.setNominal(Integer.parseInt(nominal));
-                currency.setValue(Double.parseDouble(value.replaceAll(",", ".")));
+                currency.setNominal(nom);
+                currency.setValue(val);
                 currency.setCharCode(charCode);
 
                 Rate rate = new Rate();
-                rate.setValue(Double.parseDouble(value.replaceAll(",", ".")));
+                rate.setValue(val/nom);
                 rate.setCharCode(charCode);
                 rate.setCursDate(localDate);
 
@@ -79,6 +88,9 @@ public class XmlParseService {
         return parseDto;
     }
 
+    /**
+     * Получить актуальную дату для списока валют с сайта ЦБРФ
+     */
     public LocalDate getCursDate() {
         Node node = getDOM();
         String date = node.getAttributes().getNamedItem("Date").getNodeValue();
@@ -86,7 +98,9 @@ public class XmlParseService {
         return LocalDate.parse(date, FORMATTER_DATE);
     }
 
-
+    /**
+     * Получить DOM элемент для разбора с сайта ЦБРФ
+     */
     private Node getDOM() {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

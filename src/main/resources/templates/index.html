@@ -1,16 +1,148 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Currency Converter</title>
+    <link type="text/css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
 </head>
 <body>
-<div class="mainContainer">
+<div class="container">
+    <h2 class="text-center">Конвертер валюты</h2>
+    <form action="/calculate" th:object="${convert}" method="post">
+        <div class="text-center mb-2">
+            <button type="submit" class="btn btn-outline-info">Расчитать -></button>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">У меня есть</div>
+                    <div class="card-body">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Из :</span>
+                            <select name="convertTo" class="form-control" style="max-width: 300px"
+                                    th:field="${convert.convertTo}">
+                                <option th:each="curr: ${currency}" th:value="${curr.charCode}"
+                                        th:utext="${curr.charCode} + ' (' +${curr.name} + ')'"></option>
+                            </select>
+                            <span class="input-group-text">Сумма :</span>
+                            <input type="text" name="valueTo" th:field="${convert.valueTo}" class="form-control"
+                                   id="valTo">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">Хочу преобрести</div>
+                    <div class="card-body">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">В :</span>
+                            <select name="convertFrom" class="form-control" style="max-width: 300px"
+                                    th:field="${convert.convertFrom}">
+                                <option th:each="curr: ${currency}" th:value="${curr.charCode}"
+                                        th:utext="${curr.charCode} + ' (' +${curr.name} + ')'"></option>
+                            </select>
+                            <span class="input-group-text">Сумма :</span>
+                            <input type="text" name="valueFrom" th:field="${convert.valueFrom}" class="form-control"
+                                   id="valFrom">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <h2 class="text-center">Статистика</h2>
     <div class="card">
-        <form action="">
+        <div class="card-header">
+            <h5>Статистика за период</h5>
+            <div class="input-group mb-3">
+                <span class="input-group-text">C :</span>
+                <input type="date" class="form-control-sm" th:value="${after}" id="after" name="after">
+                <span class="input-group-text">По :</span>
+                <input type="date" class="form-control-sm" th:value="${before}" id="before" name="before">
+            </div>
+            <!--                        <div class="input-group mb-3">-->
+            <!--                            <span class="input-group-text">Из :</span>-->
+            <!--                            <select id="convertTo" name="convertTo" class="form-control" style="max-width: 300px"-->
+            <!--                                    th:field="${statistic.convertTo}">-->
+            <!--                                <option th:each="curr: ${currency}" th:value="${curr.charCode}"-->
+            <!--                                        th:utext="${curr.charCode} + ' (' +${curr.name} + ')'"></option>-->
+            <!--                            </select>-->
+            <!--                            <span class="input-group-text">В :</span>-->
+            <!--                            <select id="convertFrom" name="convertFrom" class="form-control" style="max-width: 300px"-->
+            <!--                                    th:field="${statistic.convertFrom}">-->
+            <!--                                <option th:each="curr: ${currency}" th:value="${curr.charCode}"-->
+            <!--                                        th:utext="${curr.charCode} + ' (' +${curr.name} + ')'"></option>-->
+            <!--                            </select>-->
+            <!--                        </div>-->
+            <a id="search-graph" onclick="searchStat()" class="btn-sm btn-primary text-decoration-none"
+               href="/statistics">Показать</a>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th scope="col">Конвертирование из</th>
+                    <th scope="col">Конвертирование в</th>
+                    <th scope="col">Кол-во</th>
+                </tr>
+                </thead>
+                <tbody id="listingTable">
+                </tbody>
+            </table>
 
-        </form>
+            <a href="javascript:prevPage()" class="btn-sm btn-secondary text-center" type="button"
+               id="btn_prev">Prev</a>
+            <a href="javascript:nextPage()" class="btn-sm btn-secondary text-center" type="button"
+               id="btn_next">Next</a>
+            page: <span id="page"></span>
+
+        </div>
     </div>
 </div>
+
+<!-- sctipt -->
+<script src="js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+<!-- пагинация статистики-->
+<script th:replace="parts/_table_paginator :: paginator(${statistic})"></script>
+
+<!--<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>-->
+<!--<script xmlns:th="http://www.w3.org/1999/xhtml" th:inline="javascript" >-->
+<!--    google.charts.load('current', {packages: ['corechart', 'line']});-->
+<!--    google.charts.setOnLoadCallback(drawBasic);-->
+<!--    var graph = [[${graph}]];-->
+
+<!--    function drawBasic() {-->
+
+<!--        var data = new google.visualization.DataTable();-->
+<!--        data.addColumn('number', 'X');-->
+<!--        data.addColumn('number', 'Сделка');-->
+
+<!--        var arr = [-->
+<!--            [0, 0]-->
+<!--        ];-->
+
+<!--        for (let i = 0;i<graph.length;i++){-->
+<!--            arr[i] = [i+1];-->
+<!--            arr[i][1] = graph[i];-->
+<!--        }-->
+
+<!--        data.addRows(arr);-->
+<!--        console.log(data);-->
+
+<!--        var options = {-->
+<!--            hAxis: {-->
+<!--                title: 'Время'-->
+<!--            },-->
+<!--            vAxis: {-->
+<!--                title: 'Цена'-->
+<!--            }-->
+<!--        };-->
+
+<!--        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));-->
+
+<!--        chart.draw(data, options);-->
+<!--    }-->
+<!--</script>-->
 </body>
 </html>

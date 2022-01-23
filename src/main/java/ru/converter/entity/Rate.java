@@ -10,13 +10,16 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDate;
 
+/**
+ * Сущьность стоимости валют для текущей даты
+ */
 @Entity
 @Data
 @Table(name = "RATES")
 public class Rate {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "UUID2")
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     @Column(name = "ID")
     private String id;
 
