@@ -66,4 +66,10 @@
         const btn = document.getElementById('search-graph');
         btn.setAttribute('href', '/statistics/?after=' + after.value + '&before=' + before.value);
     }
+
+    function buildGraph() {
+        const rate = document.getElementById('rate');
+        const btn = document.getElementById('build-graph');
+        btn.setAttribute('href', '/graph/?charCode=' + rate.value);
+    }
 </script>

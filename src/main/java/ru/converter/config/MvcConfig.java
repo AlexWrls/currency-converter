@@ -7,7 +7,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Конфигарация
+ * Конфигурация
  */
 @Configuration
 @ComponentScan("ru.converter")

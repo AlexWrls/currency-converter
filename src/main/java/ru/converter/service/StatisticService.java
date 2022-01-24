@@ -3,68 +3,71 @@ package ru.converter.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.converter.dto.StatisticDto;
-import ru.converter.entity.Convert;
-import ru.converter.repository.ConvertRepo;
+import ru.converter.entity.Currency;
+import ru.converter.repository.CurrencyRepo;
+import ru.converter.repository.StatisticRepo;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Сервис конвертации валют и статистики за период
  */
 @Service
 public class StatisticService {
-    private final ConvertRepo convertRepo;
+    private final CurrencyRepo currencyRepo;
+    private final StatisticRepo statisticRepo;
 
     @Autowired
-    public StatisticService(ConvertRepo convertRepo) {
-        this.convertRepo = convertRepo;
-    }
+    public StatisticService(StatisticRepo statisticRepo, CurrencyRepo currencyRepo) {
 
+        this.statisticRepo = statisticRepo;
+        this.currencyRepo = currencyRepo;
+    }
 
     /**
      * Получить стаитстику за период
-     *
-     * @param after  полсле даты
-     * @param before до даты
-     * @return статистика за пириод
      */
     public List<StatisticDto> getStatByDate(LocalDate after, LocalDate before) {
-        List<Convert> converts = convertRepo.findAllByCursDateBetween(after, before);
-        Map<Convert, Integer> map = new HashMap<>();
-        List<StatisticDto> statistic = new ArrayList<>();
-        for (Convert convert1 : converts) {
-            int count = 0;
-            for (Convert convert2 : converts) {
-                if (convert1.getConvertTo().equals(convert2.getConvertTo())
-                        && convert1.getConvertFrom().equals(convert2.getConvertFrom())) {
-                    count++;
-                }
-            }
-            if (!isRecord(convert1, map)) {
-                map.put(convert1, count);
-            }
-        }
-        map.forEach((k, v) -> statistic.add(StatisticDto.builder()
-                .convertTo(k.getConvertTo())
-                .convertFrom(k.getConvertFrom())
-                .count(v).build()));
-        return statistic;
+        return addDecryption(statisticRepo.getStatisticByDateBetween(after, before));
     }
 
     /**
-     * Проверка является ли запись уникальной
+     * Получить стаитстику за период по поиску конверированной вальты
      */
-    private boolean isRecord(Convert convert, Map<Convert, Integer> map) {
-        if (map.isEmpty()) return false;
-        for (Map.Entry<Convert, Integer> entry : map.entrySet()) {
-            if (entry.getKey().getConvertFrom().equals(convert.getConvertFrom()) && entry.getKey().getConvertTo().equals(convert.getConvertTo())) {
-                return true;
-            }
-        }
-        return false;
+    public List<StatisticDto> getStatByDateAndConvertTo(LocalDate after, LocalDate before, String convertTo) {
+        return addDecryption(statisticRepo.getStatisticByDateBetweenAndConvertTo(after, before, convertTo));
     }
+
+    /**
+     * Получить стаитстику за период по поиску конверированной вальты
+     */
+    public List<StatisticDto> getStatByDateAndConvertFrom(LocalDate after, LocalDate before, String convertFrom) {
+        return addDecryption(statisticRepo.getStatisticByDateBetweenAndConvertFrom(after, before, convertFrom));
+    }
+
+    /**
+     * Получить стаитстику за период по поиску конверированной вальты
+     */
+    public List<StatisticDto> getStatByDateAndConvertToAndConvertFrom(LocalDate after, LocalDate before, String convertTo, String convertFrom) {
+        return addDecryption(statisticRepo.getStatisticByDateBetweenAndConvertToAndConvertFrom(after, before, convertTo, convertFrom));
+    }
+
+    /**
+     * Установить описание валют
+     */
+    private List<StatisticDto> addDecryption(List<StatisticDto> statistics) {
+        List<Currency> currencies = currencyRepo.findAll();
+        for (StatisticDto stat : statistics) {
+            String nameCurr = currencies.stream()
+                    .filter(curr -> curr.getCharCode().equals(stat.getConvertFrom()))
+                    .map(Currency::getName).findFirst().get();
+            String convertFrom = String.format("%s (%s)", stat.getConvertFrom(), nameCurr);
+            stat.setConvertFrom(convertFrom);
+        }
+        return statistics;
+    }
+
+
 }

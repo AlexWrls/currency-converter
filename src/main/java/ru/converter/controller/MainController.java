@@ -8,11 +8,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.converter.dto.ConvertDto;
+import ru.converter.entity.Rate;
 import ru.converter.service.ConvertService;
 import ru.converter.service.StatisticService;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Контроллер взаимодействия с view
@@ -31,10 +34,10 @@ public class MainController {
 
     @GetMapping("/")
     public String index(Model model, ConvertDto convert) {
-        model.addAttribute("currency", convertService.getCurrency());
+        model.addAttribute("currency", convertService.getAllCurrency());
         model.addAttribute("convert", convert);
         if (Objects.isNull(model.getAttribute("statistic"))) {
-            model.addAttribute("statistic", statisticService.getStatByDate(LocalDate.now().minusWeeks(1), LocalDate.now()));
+            model.addAttribute("statistic", statisticService.getStatByDate(LocalDate.now().minusWeeks(1), LocalDate.now().plusWeeks(1)));
         }
         return "index";
     }
@@ -59,4 +62,12 @@ public class MainController {
         return index(model, new ConvertDto());
     }
 
+    @GetMapping("/graph")
+    public String graph(Model model, @RequestParam(defaultValue = "RU") String charCode) {
+        final List<Double> rates = convertService.getAllRateByCharCode(charCode).stream()
+                .map(Rate::getValue)
+                .collect(Collectors.toList());
+        model.addAttribute("rates", rates);
+        return index(model, new ConvertDto());
+    }
 }

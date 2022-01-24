@@ -8,7 +8,6 @@ import ru.converter.entity.Rate;
 import ru.converter.repository.CurrencyRepo;
 import ru.converter.repository.RateRepo;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -32,7 +31,9 @@ public class SaveXmlParseService {
         XmlParseDto data = xmlParseService.parseRecourse();
         currencyRepo.saveAll(data.getCurrencies());
         rateRepo.saveAll(data.getRates());
+    }
 
+    public void addRu() {
         Currency currency = new Currency();
         currency.setId("R0111");
         currency.setCharCode("RU");

@@ -9,8 +9,5 @@ import java.util.List;
 
 @Repository
 public interface ConvertRepo extends JpaRepository<Convert, Long> {
-    List<Convert> findAllByConvertToAndConvertFrom(String convertTo, String convertFrom);
-    List<Convert> findAllByConvertToAndConvertFromAndCursDateAfterAndCursDateBefore(String convertTo, String convertFrom, LocalDate after,LocalDate before);
     List<Convert> findAllByCursDateBetween(LocalDate after,LocalDate before);
-
 }

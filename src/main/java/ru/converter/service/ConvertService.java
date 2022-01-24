@@ -68,8 +68,18 @@ public class ConvertService {
         return valueFrom;
     }
 
-    public List<Currency> getCurrency() {
+    /**
+     * Список всех валют
+     */
+    public List<Currency> getAllCurrency() {
         return currencyRepo.findAll();
+    }
+
+    /**
+     * Список всех расценок по charCode;
+     */
+    public List<Rate> getAllRateByCharCode(String charCode) {
+        return rateRepo.findAllByCharCode(charCode);
     }
 
     /**
@@ -81,7 +91,7 @@ public class ConvertService {
      * @return конверитированая сумма
      */
     private double calculateConvert(Rate rateTo, Rate rateFrom, double valTo) {
-        double val = (rateFrom.getValue() / rateTo.getValue()) * valTo;
+        double val = (rateTo.getValue() / rateFrom.getValue()) * valTo;
         BigDecimal result = new BigDecimal(val);
         result = result.setScale(3, RoundingMode.DOWN);
         return Double.parseDouble(String.valueOf(result));
