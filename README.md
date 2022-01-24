@@ -1,4 +1,6 @@
 # Конвертер валют
+Приложение развернуто на Heroku https://money-converter-app.herokuapp.com
+
 Используемые технологии:
   - Java 11, Stream API
   - Maven
