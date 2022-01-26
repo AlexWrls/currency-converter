@@ -41,12 +41,6 @@ public class ConvertService {
      * @return конверитированая сумма
      */
     public double doConvert(String convertTo, String convertFrom, double valTo) {
-        //Получить валюту из БД по charCode
-        Currency cuurTo = currencyRepo.findByCharCode(convertTo);
-        int nominalTo = cuurTo.getNominal();
-        Currency currFrom = currencyRepo.findByCharCode(convertFrom);
-        int nominalFrom = currFrom.getNominal();
-
         LocalDate curseDate = LocalDate.now();
         Rate rateTo = getRateByCurseDateAndCharCode(curseDate, convertTo);
         Rate rateFrom = getRateByCurseDateAndCharCode(curseDate, convertFrom);
@@ -71,12 +65,12 @@ public class ConvertService {
             }
         }
         //Вычисление резульатата конвертирования
-        double valueFrom = valTo * rateTo.getValue() / nominalTo / rateFrom.getValue() * nominalFrom;
+        double valueFrom = valTo * (rateTo.getValue() / rateFrom.getValue());
         valueFrom = Math.round(valueFrom * 100.0) / 100.0;
 
         Convert convert = new Convert();
-        convert.setConvertTo(cuurTo.getCharCode());
-        convert.setConvertFrom(currFrom.getCharCode());
+        convert.setConvertTo(convertTo);
+        convert.setConvertFrom(convertFrom);
         convert.setValueTo(valTo);
         convert.setValueFrom(valueFrom);
         convert.setCursDate(curseDate);
