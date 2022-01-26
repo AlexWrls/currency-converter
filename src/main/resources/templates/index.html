@@ -63,41 +63,38 @@
                 <span class="input-group-text">По :</span>
                 <input type="date" class="form-control-sm" th:value="${before}" id="before" name="before">
 
-                <span class="input-group-text">Из :</span>
-                <select id="convertTo" name="convertTo" class="form-control" style="max-width: 300px">
-                    <option>...</option>
-                    <option th:each="curr: ${currency}" th:value="${curr.charCode}"
-                            th:utext="${curr.charCode} + ' (' +${curr.name} + ')'"></option>
-                </select>
-                <span class="input-group-text">В :</span>
-                <select id="convertFrom" name="convertFrom" class="form-control" style="max-width: 300px">
-                    <option>...</option>
-                    <option th:each="curr: ${currency}" th:value="${curr.charCode}"
-                            th:utext="${curr.charCode} + ' (' +${curr.name} + ')'"></option>
-                </select>
                 <a id="search-graph" onclick="searchStat()" class="btn-sm btn-primary text-decoration-none"
-                   href="/statistics">Показать</a>
+                   href="/statistics">Получить за период</a>
             </div>
         </div>
         <div class="card-body">
             <table class="table table-bordered">
                 <thead>
                 <tr>
-                    <th scope="col">Конвертирование из</th>
-                    <th scope="col">Конвертирование в</th>
+                    <th scope="col">Конвертирование из
+                        <select id="filterConvertTo" name="convertTo"
+                                class="form-control" style="max-width: 300px"
+                                onchange="filter()">
+                            <option>...</option>
+                            <option th:each="curr: ${currency}" th:value="${curr.charCode} + ' (' +${curr.name} + ')'"
+                                    th:utext="${curr.charCode} + ' (' +${curr.name} + ')'"></option>
+                        </select></th>
+                    <th scope="col">
+                        Конвертирование в
+                        <select id="filterConvertFrom" name="convertFrom" class="form-control"
+                                style="max-width: 300px"
+                                onchange="filter()">
+                            <option>...</option>
+                            <option th:each="curr: ${currency}" th:value="${curr.charCode} + ' (' +${curr.name} + ')'"
+                                    th:utext="${curr.charCode} + ' (' +${curr.name} + ')'"></option>
+                        </select>
+                    </th>
                     <th scope="col">Кол-во</th>
                 </tr>
                 </thead>
                 <tbody id="listingTable">
                 </tbody>
             </table>
-
-            <a href="javascript:prevPage()" class="btn-sm btn-secondary text-center" type="button"
-               id="btn_prev">Prev</a>
-            <a href="javascript:nextPage()" class="btn-sm btn-secondary text-center" type="button"
-               id="btn_next">Next</a>
-            часть: <span id="page"></span>
-
         </div>
     </div>
     <div class="card">
@@ -122,7 +119,7 @@
 <!-- sctipt -->
 <script src="js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
 <!-- пагинация статистики-->
-<script th:replace="parts/_table_paginator :: paginator(${statistic})"></script>
+<script th:replace="parts/_table_filter :: filter(${statistic})"></script>
 <!-- график изменения валют-->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script th:replace="parts/_graph :: graph(${rates})"></script>

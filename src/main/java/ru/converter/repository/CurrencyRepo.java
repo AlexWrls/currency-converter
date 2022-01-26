@@ -5,5 +5,6 @@ import org.springframework.stereotype.Repository;
 import ru.converter.entity.Currency;
 
 @Repository
-public interface CurrencyRepo extends JpaRepository<Currency,String> {
+public interface CurrencyRepo extends JpaRepository<Currency, String> {
+    Currency findByCharCode(String charCode);
 }

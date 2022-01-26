@@ -36,7 +36,7 @@ public class SaveXmlParseService {
     public void addRu() {
         Currency currency = new Currency();
         currency.setId("R0111");
-        currency.setCharCode("RU");
+        currency.setCharCode("RUB");
         currency.setName("Российский рубль");
         currency.setNominal(1);
         currency.setValue(1);

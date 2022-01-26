@@ -14,7 +14,6 @@ import ru.converter.service.StatisticService;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -36,9 +35,7 @@ public class MainController {
     public String index(Model model, ConvertDto convert) {
         model.addAttribute("currency", convertService.getAllCurrency());
         model.addAttribute("convert", convert);
-        if (Objects.isNull(model.getAttribute("statistic"))) {
-            model.addAttribute("statistic", statisticService.getStatByDate(LocalDate.now().minusWeeks(1), LocalDate.now().plusWeeks(1)));
-        }
+        statisticService.setStatisticModel(model);
         return "index";
     }
 
@@ -54,8 +51,6 @@ public class MainController {
             @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate after,
             @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate before,
             Model model) {
-        after = Objects.isNull(after) ? LocalDate.parse("2000-01-01") : after;
-        before = Objects.isNull(before) ? LocalDate.now() : before;
         model.addAttribute("statistic", statisticService.getStatByDate(after, before));
         model.addAttribute("after", after);
         model.addAttribute("before", before);
@@ -63,7 +58,7 @@ public class MainController {
     }
 
     @GetMapping("/graph")
-    public String graph(Model model, @RequestParam(defaultValue = "RU") String charCode) {
+    public String graph(Model model, @RequestParam(defaultValue = "AUD") String charCode) {
         final List<Double> rates = convertService.getAllRateByCharCode(charCode).stream()
                 .map(Rate::getValue)
                 .collect(Collectors.toList());

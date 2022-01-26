@@ -9,10 +9,9 @@ import ru.converter.repository.ConvertRepo;
 import ru.converter.repository.CurrencyRepo;
 import ru.converter.repository.RateRepo;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Сервис конвертации валют
@@ -42,31 +41,73 @@ public class ConvertService {
      * @return конверитированая сумма
      */
     public double doConvert(String convertTo, String convertFrom, double valTo) {
-        final Rate rateTo = rateRepo.findTopByCharCodeOrderByIdDesc(convertTo);
-        final Rate rateFrom = rateRepo.findTopByCharCodeOrderByIdDesc(convertFrom);
-        final LocalDate cursDate = xmlParseService.getCursDate();
-        double valueFrom;
+        //Получить валюту из БД по charCode
+        Currency cuurTo = currencyRepo.findByCharCode(convertTo);
+        int nominalTo = cuurTo.getNominal();
+        Currency currFrom = currencyRepo.findByCharCode(convertFrom);
+        int nominalFrom = currFrom.getNominal();
+
+        LocalDate curseDate = LocalDate.now();
+        Rate rateTo = getRateByCurseDateAndCharCode(curseDate, convertTo);
+        Rate rateFrom = getRateByCurseDateAndCharCode(curseDate, convertFrom);
+
+        //Если в БД отсутствует расценки валют на сегодняшний день
+        if (rateTo == null || rateFrom == null) {
+            //Получить актуальную дату для списока валют с сайта ЦБРФ
+            LocalDate actualDate = xmlParseService.getCursDate();
+            //Получить последнюю дату расценок валют из БД
+            LocalDate lastBaseDate = rateRepo.findTopByOrderByIdDesc().getCursDate();
+            //Если даты отличаются, в таблицу расценок БД добавляются актуальные расценки с сайта ЦБРФ
+            if (!actualDate.equals(lastBaseDate)) {
+                List<Rate> rates = xmlParseService.parseRecourse().getRates();
+                rateTo = getRateByCharCode(rates, convertTo);
+                rateFrom = getRateByCharCode(rates, convertFrom);
+                rateRepo.saveAll(rates);
+            }
+            //Если 2 полученные даты совпадают, курсы валют считываются из БД
+            else {
+                rateTo = getRateByCurseDateAndCharCode(actualDate, convertTo);
+                rateFrom = getRateByCurseDateAndCharCode(actualDate, convertFrom);
+            }
+        }
+        //Вычисление резульатата конвертирования
+        double valueFrom = valTo * rateTo.getValue() / nominalTo / rateFrom.getValue() * nominalFrom;
+        valueFrom = Math.round(valueFrom * 100.0) / 100.0;
 
         Convert convert = new Convert();
-        convert.setCursDate(cursDate);
-        convert.setConvertTo(convertTo);
-        convert.setConvertFrom(convertFrom);
+        convert.setConvertTo(cuurTo.getCharCode());
+        convert.setConvertFrom(currFrom.getCharCode());
         convert.setValueTo(valTo);
-
-        if (!cursDate.isEqual(rateTo.getCursDate()) || !cursDate.isEqual(rateFrom.getCursDate())) {
-            final List<Rate> rates = xmlParseService.parseRecourse().getRates();
-            Rate parseRateTo = getRateByCharCode(rates, convertTo);
-            Rate parseRateFrom = getRateByCharCode(rates, convertFrom);
-            rateRepo.save(parseRateTo);
-            rateRepo.save(parseRateFrom);
-            valueFrom = calculateConvert(parseRateTo, parseRateFrom, valTo);
-        } else {
-            valueFrom = calculateConvert(rateTo, rateFrom, valTo);
-        }
         convert.setValueFrom(valueFrom);
+        convert.setCursDate(curseDate);
+
         convertRepo.save(convert);
         return valueFrom;
     }
+
+    /**
+     * Получить расценки валют из БД на сегодня
+     */
+    private Rate getRateByCurseDateAndCharCode(LocalDate curseDate, String charCode) {
+        Rate rate = null;
+        Optional<Rate> rateToOpt = rateRepo.findByCursDateAndCharCode(curseDate, charCode);
+        if (rateToOpt.isPresent()) {
+            rate = rateToOpt.get();
+        } else if (charCode.equals("RUB")) {
+            rate = rateRepo.findByCharCode("RUB");
+        }
+        return rate;
+    }
+
+    /**
+     * Получить расценки по charCode
+     */
+    private Rate getRateByCharCode(List<Rate> rates, String charCode) {
+        return rates.stream().filter(rate -> rate.equals(charCode))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
 
     /**
      * Список всех валют
@@ -80,32 +121,6 @@ public class ConvertService {
      */
     public List<Rate> getAllRateByCharCode(String charCode) {
         return rateRepo.findAllByCharCode(charCode);
-    }
-
-    /**
-     * Расчет предобразования вылюты
-     *
-     * @param rateTo   даные исходной валюты
-     * @param rateFrom даные преобразованной валюты
-     * @param valTo    кол-во исходной валюты
-     * @return конверитированая сумма
-     */
-    private double calculateConvert(Rate rateTo, Rate rateFrom, double valTo) {
-        double val = (rateTo.getValue() / rateFrom.getValue()) * valTo;
-        BigDecimal result = new BigDecimal(val);
-        result = result.setScale(3, RoundingMode.DOWN);
-        return Double.parseDouble(String.valueOf(result));
-    }
-
-    /**
-     * Получение данных по CharCode валюты
-     *
-     * @return данные валюты из списка rates по фильтру charCode
-     */
-    private Rate getRateByCharCode(List<Rate> rates, String charCode) {
-        return rates.stream()
-                .filter(r -> r.getCharCode().equals(charCode))
-                .findFirst().orElse(null);
     }
 
 }

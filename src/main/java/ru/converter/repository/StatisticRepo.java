@@ -25,32 +25,16 @@ public class StatisticRepo {
     }
 
     public List<StatisticDto> getStatisticByDateBetween(LocalDate after, LocalDate before) {
-        return jdbcTemplate.query("select concat(c.convert_to,' (',cu.name,')') as convertTo, convert_from as convertFrom, count(*) as count from converts as c\n" +
-                "join currencys as cu on cu.char_code like c.convert_to or cu.char_code like c.convert_from\n" +
-                "where c.convert_to like cu.char_code and c.curs_date >= '" + after + "' and c.curs_date  <= '" + before + "' \n" +
-                "group by concat(c.convert_to,' (',cu.name,')'),convert_from", ((rs, row) -> map(rs)));
-    }
-
-    public List<StatisticDto> getStatisticByDateBetweenAndConvertTo(LocalDate after, LocalDate before, String convertTo) {
-        return jdbcTemplate.query("select concat(c.convert_to,' (',cu.name,')') as convertTo, convert_from as convertFrom, count(*) as count from converts as c\n" +
-                "join currencys as cu on cu.char_code like c.convert_to \n" +
-                "where c.convert_to like '" + convertTo + "' and c.curs_date >= '" + after + "' and c.curs_date  <= '" + before + "' \n" +
-                "group by concat(c.convert_to,' (',cu.name,')'),convert_from", ((rs, row) -> map(rs)));
-    }
-
-    public List<StatisticDto> getStatisticByDateBetweenAndConvertFrom(LocalDate after, LocalDate before, String convertFrom) {
-        return jdbcTemplate.query("select concat(c.convert_to,' (',cu.name,')') as convertTo, concat(convert_from) convertFrom, count(*) as count from converts as c\n" +
-                "join currencys as cu on  cu.char_code like c.convert_from\n" +
-                "where c.convert_from  like '" + convertFrom + "' and c.curs_date >= '" + after + "' and c.curs_date  <= '" + before + "' \n" +
-                "group by concat(c.convert_to,' (',cu.name,')'), concat(convert_from)", ((rs, row) -> map(rs)));
-    }
-
-    public List<StatisticDto> getStatisticByDateBetweenAndConvertToAndConvertFrom(LocalDate after, LocalDate before, String convertTo, String convertFrom) {
-        return jdbcTemplate.query("select concat(c.convert_to,' (',cu.name,')') as convertTo, concat(convert_from) convertFrom, count(*) as count from converts as c\n" +
-                "join currencys as cu on  cu.char_code like c.convert_from\n" +
-                "where c.convert_from  like '" + convertFrom + "' and c.convert_to like '" + convertTo + "' " +
-                "and c.curs_date >= '" + after + "' and c.curs_date  <= '" + before + "' \n" +
-                "group by concat(c.convert_to,' (',cu.name,')'), concat(convert_from)", ((rs, row) -> map(rs)));
+        return jdbcTemplate.query("select concat(c.convert_to, ' (', cu.name, ')') as convertTo,\n" +
+                "       concat(c.convert_from, ' (',cur.name,')') as convertFrom,\n" +
+                "       count(*)                                 as count\n" +
+                "from converts as c\n" +
+                "         join currencys as cu on cu.char_code like c.convert_to\n" +
+                "         join currencys as cur on cur.char_code like c.convert_from\n" +
+                "where c.convert_to like cu.char_code\n" +
+                "  and c.curs_date >= '" + after + "'\n" +
+                "  and c.curs_date <= '" + before + "'\n" +
+                "group by concat(c.convert_to, ' (', cu.name, ')'),  concat(c.convert_from, ' (',cur.name,')') ", ((rs, row) -> map(rs)));
     }
 
     private StatisticDto map(ResultSet res) {

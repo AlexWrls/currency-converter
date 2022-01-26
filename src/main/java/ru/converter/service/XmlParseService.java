@@ -44,7 +44,6 @@ public class XmlParseService {
     public XmlParseDto parseRecourse() {
         List<Currency> currencies = new ArrayList<>();
         List<Rate> rates = new ArrayList<>();
-        XmlParseDto parseDto = new XmlParseDto();
         Node node = getDOM();
         try {
             String date = node.getAttributes().getNamedItem(DATE).getNodeValue();
@@ -86,9 +85,7 @@ public class XmlParseService {
             log.error("Ошибка разбора DOM дерева по адресу: " + URL);
         }
         log.trace("Текущий курс валют: " + currencies);
-        parseDto.setCurrencies(currencies);
-        parseDto.setRates(rates);
-        return parseDto;
+        return XmlParseDto.builder().currencies(currencies).rates(rates).build();
     }
 
     /**
@@ -121,6 +118,4 @@ public class XmlParseService {
             throw new RuntimeException(e.getMessage());
         }
     }
-
-
 }

@@ -1,0 +1,34 @@
+<script xmlns:th="http://www.w3.org/1999/xhtml" th:inline="javascript" th:fragment="filter(statistic)">
+    window.onload = filter
+    // document.onload = filter
+
+    let objJson = [[${statistic}]];
+
+    // формирование фильтра статистики
+    function filter() {
+        let filterTo = document.getElementById('filterConvertTo');
+        let filterFrom = document.getElementById('filterConvertFrom');
+        let listing_table = document.getElementById("listingTable");
+        listing_table.innerHTML = "";
+        for (let i = 0; i < objJson.length; i++) {
+            if ((filterFrom.value === objJson[i].convertFrom || filterFrom.value === '...') && (filterTo.value === objJson[i].convertTo || filterTo.value === '...')) {
+                listing_table.innerHTML += "<tr><td>" + objJson[i].convertTo + "</td><td>" + objJson[i].convertFrom + "</td><td>" + objJson[i].count + "</td></tr>";
+            }
+        }
+    }
+
+    // формирование фильтра на запрос статистики
+    function searchStat() {
+        const after = document.getElementById('after');
+        const before = document.getElementById('before');
+        const btn = document.getElementById('search-graph');
+        btn.setAttribute('href', '/statistics/?after=' + after.value + '&before=' + before.value);
+    }
+
+    // формирование фильтра на график валют
+    function buildGraph() {
+        const rate = document.getElementById('rate');
+        const btn = document.getElementById('build-graph');
+        btn.setAttribute('href', '/graph/?charCode=' + rate.value);
+    }
+</script>
