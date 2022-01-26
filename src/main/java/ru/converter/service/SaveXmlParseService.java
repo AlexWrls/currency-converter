@@ -2,7 +2,6 @@ package ru.converter.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.converter.dto.XmlParseDto;
 import ru.converter.entity.Currency;
 import ru.converter.entity.Rate;
 import ru.converter.repository.CurrencyRepo;
