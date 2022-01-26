@@ -97,9 +97,13 @@ public class ConvertService {
      * Получить расценки по charCode
      */
     private Rate getRateByCharCode(List<Rate> rates, String charCode) {
-        return rates.stream().filter(rate -> rate.equals(charCode))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
+        if (charCode.equals("RUB")) {
+            return rateRepo.findByCharCode("RUB");
+        } else {
+            return rates.stream().filter(rate -> rate.getCharCode().equals(charCode))
+                    .findFirst()
+                    .orElseThrow(RuntimeException::new);
+        }
     }
 
 

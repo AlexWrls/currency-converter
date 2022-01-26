@@ -27,6 +27,10 @@ public class SaveXmlParseService {
         this.xmlParseService = xmlParseService;
     }
 
+    private static final String ID = "R0111";
+    private static final String CHAR_CODE = "RUB";
+    private static final String NAME = "Российский рубль";
+
     public void saveXMLParseData() {
         XmlParseDto data = xmlParseService.parseRecourse();
         currencyRepo.saveAll(data.getCurrencies());
@@ -35,17 +39,17 @@ public class SaveXmlParseService {
 
     public void addRu() {
         Currency currency = new Currency();
-        currency.setId("R0111");
-        currency.setCharCode("RUB");
-        currency.setName("Российский рубль");
+        currency.setId(ID);
+        currency.setCharCode(CHAR_CODE);
+        currency.setName(NAME);
         currency.setNominal(1);
-        currency.setValue(1);
-        currency.setNumCode("111");
+        currency.setValue(1d);
+        currency.setNumCode("1");
 
         Rate rate = new Rate();
         rate.setCursDate(xmlParseService.getCursDate());
-        rate.setCharCode(currency.getCharCode());
-        rate.setValue(currency.getValue());
+        rate.setCharCode(CHAR_CODE);
+        rate.setValue(1d);
         rate.setId(UUID.randomUUID().toString());
 
         currencyRepo.save(currency);
