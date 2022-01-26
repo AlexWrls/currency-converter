@@ -89,7 +89,10 @@
                                     th:utext="${curr.charCode} + ' (' +${curr.name} + ')'"></option>
                         </select>
                     </th>
-                    <th scope="col">Кол-во</th>
+                    <th scope="col">Кол-во
+                        <button class="btn-sm btn-outline-secondary" onclick="sort()">↓</button>
+                        <button class="btn-sm btn-outline-secondary" onclick="reverseSort()">↑</button>
+                    </th>
                 </tr>
                 </thead>
                 <tbody id="listingTable">

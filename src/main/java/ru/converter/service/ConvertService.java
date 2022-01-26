@@ -66,7 +66,7 @@ public class ConvertService {
         }
         //Вычисление резульатата конвертирования
         double valueFrom = valTo * (rateTo.getValue() / rateFrom.getValue());
-        valueFrom = Math.round(valueFrom * 100.0) / 100.0;
+        valueFrom = Math.round(valueFrom * 1000.0) / 1000.0;
 
         Convert convert = new Convert();
         convert.setConvertTo(convertTo);
