@@ -7,6 +7,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import ru.converter.dto.XmlParseDto;
 import ru.converter.entity.Currency;
 import ru.converter.entity.Rate;
 
