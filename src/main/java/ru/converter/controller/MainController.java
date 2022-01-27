@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.converter.dto.ConvertDto;
+import ru.converter.entity.Currency;
 import ru.converter.entity.Rate;
 import ru.converter.service.ConvertService;
 import ru.converter.service.StatisticService;
@@ -62,6 +63,8 @@ public class MainController {
         final List<Double> rates = convertService.getAllRateByCharCode(charCode).stream()
                 .map(Rate::getValue)
                 .collect(Collectors.toList());
+        Currency currency = convertService.getCurrencyByCharCode(charCode);
+        model.addAttribute("graphCurrency",String.format("%s (%s)",currency.getCharCode(),currency.getName()));
         model.addAttribute("rates", rates);
         return index(model, new ConvertDto());
     }

@@ -80,6 +80,27 @@ public class ConvertService {
     }
 
     /**
+     * Список всех валют
+     */
+    public List<Currency> getAllCurrency() {
+        return currencyRepo.findAll();
+    }
+
+    /**
+     * Список всех расценок по charCode;
+     */
+    public List<Rate> getAllRateByCharCode(String charCode) {
+        return rateRepo.findAllByCharCode(charCode);
+    }
+
+    /**
+     * Получить вылюту по charCode;
+     */
+    public Currency getCurrencyByCharCode(String charCode){
+        return currencyRepo.findByCharCode(charCode);
+    }
+
+    /**
      * Получить расценки валют из БД на сегодня
      */
     private Rate getRateByCurseDateAndCharCode(LocalDate curseDate, String charCode) {
@@ -107,18 +128,6 @@ public class ConvertService {
     }
 
 
-    /**
-     * Список всех валют
-     */
-    public List<Currency> getAllCurrency() {
-        return currencyRepo.findAll();
-    }
 
-    /**
-     * Список всех расценок по charCode;
-     */
-    public List<Rate> getAllRateByCharCode(String charCode) {
-        return rateRepo.findAllByCharCode(charCode);
-    }
 
 }

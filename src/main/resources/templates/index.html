@@ -9,13 +9,7 @@
 <div class="container">
     <h2 class="text-center">Конвертер валюты</h2>
     <form action="/calculate" th:object="${convert}" method="post">
-        <div class="text-center mb-2">
-            <button type="submit" class="btn-sm btn-primary text-decoration-none">Расчитать -></button>
-        </div>
-        <div class="row">
-            <div class="col">
                 <div class="card">
-                    <div class="card-header">У меня есть</div>
                     <div class="card-body">
                         <div class="input-group mb-3">
                             <span class="input-group-text">Из :</span>
@@ -28,15 +22,6 @@
                             <input type="number" step="any" required name="valueTo" th:field="${convert.valueTo}"
                                    class="form-control"
                                    id="valTo">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <div class="card-header">Хочу преобрести</div>
-                    <div class="card-body">
-                        <div class="input-group mb-3">
                             <span class="input-group-text">В :</span>
                             <select name="convertFrom" class="form-control" style="max-width: 300px"
                                     th:field="${convert.convertFrom}">
@@ -47,11 +32,10 @@
                             <input type="number" name="valueFrom" readonly th:field="${convert.valueFrom}"
                                    class="form-control"
                                    id="valFrom">
+                            <button type="submit" class="btn-sm btn-primary text-decoration-none">конвертировать</button>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
     </form>
     <h2 class="text-center">Статистика</h2>
     <div class="card">
@@ -104,8 +88,8 @@
         <div class="card-header">
             <div class="input-group mb-3">
                 <span class="input-group-text">График изменения валют по :</span>
-                <select name="convertFrom" id="rate" class="form-control" style="max-width: 300px"
-                        th:field="${convert.convertFrom}">
+                <select name="convertFrom" id="rate" class="form-control" style="max-width: 300px" >
+                    <option th:text="${graphCurrency}==null?'...':${graphCurrency}" ></option>
                     <option th:each="curr: ${currency}" th:value="${curr.charCode}"
                             th:utext="${curr.charCode} + ' (' +${curr.name} + ')'"></option>
                 </select>
