@@ -13,7 +13,7 @@ public interface RateRepo extends JpaRepository<Rate, String> {
 
     Rate findByCharCode(String charCode);
 
-    Rate findTopByOrderByIdDesc();
+    Rate findTopByOrderByCursDateDesc();
 
     Optional<Rate> findByCursDateAndCharCode(LocalDate curseDate, String charCode);
 

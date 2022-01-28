@@ -50,7 +50,7 @@ public class ConvertService {
             //Получить актуальную дату для списока валют с сайта ЦБРФ
             LocalDate actualDate = xmlParseService.getCursDate();
             //Получить последнюю дату расценок валют из БД
-            LocalDate lastBaseDate = rateRepo.findTopByOrderByIdDesc().getCursDate();
+            LocalDate lastBaseDate = rateRepo.findTopByOrderByCursDateDesc().getCursDate();
             //Если даты отличаются, в таблицу расценок БД добавляются актуальные расценки с сайта ЦБРФ
             if (!actualDate.equals(lastBaseDate)) {
                 List<Rate> rates = xmlParseService.parseRecourse().getRates();
