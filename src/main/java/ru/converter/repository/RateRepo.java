@@ -17,5 +17,5 @@ public interface RateRepo extends JpaRepository<Rate, String> {
 
     Optional<Rate> findByCursDateAndCharCode(LocalDate curseDate, String charCode);
 
-    List<Rate> findAllByCharCodeOrderByCursDateDesc(String charCode);
+    List<Rate> findAllByCharCodeOrderByCursDate(String charCode);
 }

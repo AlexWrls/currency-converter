@@ -90,7 +90,7 @@ public class ConvertService {
      * Список всех расценок по charCode;
      */
     public List<Rate> getAllRateByCharCode(String charCode) {
-      return rateRepo.findAllByCharCodeOrderByCursDateDesc(charCode);
+      return rateRepo.findAllByCharCodeOrderByCursDate(charCode);
     }
 
     /**
