@@ -11,12 +11,11 @@ import java.util.Optional;
 @Repository
 public interface RateRepo extends JpaRepository<Rate, String> {
 
-    //    Rate findTopByCharCodeOrderByIdDesc(String charCode);
-//
-    List<Rate> findAllByCharCode(String charCode);
     Rate findByCharCode(String charCode);
 
     Rate findTopByOrderByIdDesc();
 
     Optional<Rate> findByCursDateAndCharCode(LocalDate curseDate, String charCode);
+
+    List<Rate> findAllByCharCodeOrderByCursDateDesc(String charCode);
 }
