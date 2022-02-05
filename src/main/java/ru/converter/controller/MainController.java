@@ -1,5 +1,6 @@
 package ru.converter.controller;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -11,32 +12,32 @@ import ru.converter.dto.ConvertDto;
 import ru.converter.entity.Currency;
 import ru.converter.entity.Rate;
 import ru.converter.service.ConvertService;
-import ru.converter.service.StatisticService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
  * Контроллер взаимодействия с view
  */
 @Controller
+@AllArgsConstructor
 public class MainController {
 
     private final ConvertService convertService;
-    private final StatisticService statisticService;
-
-    @Autowired
-    public MainController(ConvertService convertService, StatisticService statisticService) {
-        this.convertService = convertService;
-        this.statisticService = statisticService;
-    }
 
     @GetMapping("/")
     public String index(Model model, ConvertDto convert) {
         model.addAttribute("currency", convertService.getAllCurrency());
         model.addAttribute("convert", convert);
-        statisticService.setStatisticModel(model);
+        if (Objects.isNull(model.getAttribute("statistic"))) {
+            LocalDate after = LocalDate.now().minusWeeks(1);
+            LocalDate before = LocalDate.now();
+            model.addAttribute("after", after);
+            model.addAttribute("before", before);
+            model.addAttribute("statistic", convertService.getStatisticByDateBetween(after, before));
+        }
         return "index";
     }
 
@@ -52,7 +53,7 @@ public class MainController {
             @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate after,
             @RequestParam(defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate before,
             Model model) {
-        model.addAttribute("statistic", statisticService.getStatByDate(after, before));
+        model.addAttribute("statistic", convertService.getStatisticByDateBetween(after, before));
         model.addAttribute("after", after);
         model.addAttribute("before", before);
         return index(model, new ConvertDto());

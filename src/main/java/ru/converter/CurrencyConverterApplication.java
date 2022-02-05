@@ -10,11 +10,9 @@ import ru.converter.service.SaveXmlParseService;
 @SpringBootApplication
 public class CurrencyConverterApplication implements ApplicationRunner {
 
-    private final SaveXmlParseService saveXmlParse;
     @Autowired
-    public CurrencyConverterApplication(SaveXmlParseService saveXmlParse) {
-        this.saveXmlParse = saveXmlParse;
-    }
+    private SaveXmlParseService saveXmlParse;
+
 
     public static void main(String[] args) {
         SpringApplication.run(CurrencyConverterApplication.class, args);

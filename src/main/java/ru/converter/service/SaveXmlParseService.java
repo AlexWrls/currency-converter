@@ -1,5 +1,6 @@
 package ru.converter.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.converter.dto.XmlParseDto;
@@ -14,18 +15,13 @@ import java.util.UUID;
  * Сервис сохранения списка актуальных валют
  */
 @Service
+@AllArgsConstructor
 public class SaveXmlParseService {
 
     private final CurrencyRepo currencyRepo;
     private final RateRepo rateRepo;
     private final XmlParseService xmlParseService;
 
-    @Autowired
-    public SaveXmlParseService(RateRepo rateRepo, CurrencyRepo currencyRepo, XmlParseService xmlParseService) {
-        this.rateRepo = rateRepo;
-        this.currencyRepo = currencyRepo;
-        this.xmlParseService = xmlParseService;
-    }
 
     private static final String ID = "R0111";
     private static final String CHAR_CODE = "RUB";

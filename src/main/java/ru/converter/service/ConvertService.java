@@ -1,7 +1,9 @@
 package ru.converter.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.converter.dto.Statistic;
 import ru.converter.entity.Convert;
 import ru.converter.entity.Currency;
 import ru.converter.entity.Rate;
@@ -11,12 +13,14 @@ import ru.converter.repository.RateRepo;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
  * Сервис конвертации валют
  */
 @Service
+@AllArgsConstructor
 public class ConvertService {
 
     private final ConvertRepo convertRepo;
@@ -24,13 +28,6 @@ public class ConvertService {
     private final XmlParseService xmlParseService;
     private final CurrencyRepo currencyRepo;
 
-    @Autowired
-    public ConvertService(ConvertRepo convertRepo, RateRepo rateRepo, XmlParseService xmlParseService, CurrencyRepo currencyRepo) {
-        this.convertRepo = convertRepo;
-        this.rateRepo = rateRepo;
-        this.xmlParseService = xmlParseService;
-        this.currencyRepo = currencyRepo;
-    }
 
     /**
      * Выполнение конвертации одной вылюты в другую
@@ -90,13 +87,22 @@ public class ConvertService {
      * Список всех расценок по charCode;
      */
     public List<Rate> getAllRateByCharCode(String charCode) {
-      return rateRepo.findAllByCharCodeOrderByCursDate(charCode);
+        return rateRepo.findAllByCharCodeOrderByCursDate(charCode);
+    }
+
+    /**
+     * Получит статистику за период;
+     */
+    public List<Statistic> getStatisticByDateBetween(LocalDate after, LocalDate before) {
+        after = Objects.isNull(after) ? LocalDate.now().minusWeeks(1) : after;
+        before = Objects.isNull(before) ? LocalDate.now() : before;
+        return convertRepo.getStatistic(after, before);
     }
 
     /**
      * Получить вылюту по charCode;
      */
-    public Currency getCurrencyByCharCode(String charCode){
+    public Currency getCurrencyByCharCode(String charCode) {
         return currencyRepo.findByCharCode(charCode);
     }
 
