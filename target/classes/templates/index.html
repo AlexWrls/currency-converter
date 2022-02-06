@@ -8,48 +8,51 @@
 <body>
 <div class="container">
     <h2 class="text-center">Конвертер валюты</h2>
-    <form action="/calculate" th:object="${convert}" method="post">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">Из :</span>
-                            <select name="convertTo" class="form-control" style="max-width: 300px"
-                                    th:field="${convert.convertTo}">
-                                <option th:each="curr: ${currency}" th:value="${curr.charCode}"
-                                        th:utext="${curr.charCode} + ' (' +${curr.name} + ')'"></option>
-                            </select>
-                            <span class="input-group-text">Сумма :</span>
-                            <input type="number" step="any" required name="valueTo" th:field="${convert.valueTo}"
-                                   class="form-control"
-                                   id="valTo">
-                            <span class="input-group-text">В :</span>
-                            <select name="convertFrom" class="form-control" style="max-width: 300px"
-                                    th:field="${convert.convertFrom}">
-                                <option th:each="curr: ${currency}" th:value="${curr.charCode}"
-                                        th:utext="${curr.charCode} + ' (' +${curr.name} + ')'"></option>
-                            </select>
-                            <span class="input-group-text">Сумма :</span>
-                            <input type="number" name="valueFrom" readonly th:field="${convert.valueFrom}"
-                                   class="form-control"
-                                   id="valFrom">
-                            <button type="submit" class="btn-sm btn-primary text-decoration-none">конвертировать</button>
-                        </div>
-                    </div>
+    <form id="convert">
+        <div class="card">
+            <div class="card-body">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Из :</span>
+                    <select id="convertTo" name="convertTo" class="form-control" style="max-width: 300px">
+                        <option th:each="curr: ${currency}" th:value="${curr.charCode}"
+                                th:utext="${curr.charCode} + ' (' +${curr.name} + ')'"></option>
+                    </select>
+                    <span class="input-group-text">Сумма :</span>
+                    <input type="number" step="any" required name="valueTo"
+                           class="form-control"
+                           id="valTo">
+                    <span class="input-group-text">В :</span>
+                    <select id="convertFrom" name="convertFrom" class="form-control" style="max-width: 300px">
+                        <option th:each="curr: ${currency}" th:value="${curr.charCode}"
+                                th:utext="${curr.charCode} + ' (' +${curr.name} + ')'"></option>
+                    </select>
+                    <span class="input-group-text">Сумма :</span>
+                    <input type="number" name="valueFrom" readonly
+                           class="form-control"
+                           id="valFrom">
+                    <button id="btn-convert" type="submit" class="btn-sm btn-primary text-decoration-none">
+                        конвертировать
+                    </button>
                 </div>
+            </div>
+        </div>
     </form>
     <h2 class="text-center">Статистика</h2>
     <div class="card">
         <div class="card-header">
             <h5>Статистика за период</h5>
-            <div class="input-group mb-3">
-                <span class="input-group-text">C :</span>
-                <input type="date" class="form-control-sm" th:value="${after}" id="after" name="after">
-                <span class="input-group-text">По :</span>
-                <input type="date" class="form-control-sm" th:value="${before}" id="before" name="before">
+            <form id="statistics">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">C :</span>
+                    <input type="date" class="form-control-sm" id="after" name="after">
+                    <span class="input-group-text">По :</span>
+                    <input type="date" class="form-control-sm" id="before" name="before">
 
-                <a id="search-graph" onclick="searchStat()" class="btn-sm btn-primary text-decoration-none"
-                   href="/statistics">Получить за период</a>
-            </div>
+                    <button id="btn-statistics" type="submit" class="btn-sm btn-primary text-decoration-none">Получить
+                        за период
+                    </button>
+                </div>
+            </form>
         </div>
         <div class="card-body">
             <table class="table table-bordered">
@@ -84,31 +87,32 @@
             </table>
         </div>
     </div>
-    <div class="card">
-        <div class="card-header">
-            <div class="input-group mb-3">
-                <span class="input-group-text">График изменения валют по :</span>
-                <select name="convertFrom" id="rate" class="form-control" style="max-width: 300px" >
-                    <option th:text="${graphCurrency}==null?'...':${graphCurrency}" ></option>
-                    <option th:each="curr: ${currency}" th:value="${curr.charCode}"
-                            th:utext="${curr.charCode} + ' (' +${curr.name} + ')'"></option>
-                </select>
-                <a id="build-graph" onclick="buildGraph()" class="btn-sm btn-primary text-decoration-none"
-                   href="/statistics">Показать</a>
+        <div class="card">
+            <div class="card-header">
+                <form id="chart">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">График изменения валют по :</span>
+                        <select name="convertFrom" id="charCode" class="form-control" style="max-width: 300px">
+                            <option th:each="curr: ${currency}" th:value="${curr.charCode}"
+                                    th:utext="${curr.charCode} + ' (' +${curr.name} + ')'"></option>
+                        </select>
+                        <button id="btn-chart" type="submit" class="btn-sm btn-primary text-decoration-none">Показать</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-body">
+                <div id="rootChart">
+                    <canvas id="myChart"></canvas>
+                </div>
             </div>
         </div>
-        <div class="card-body">
-            <div id="chart_div"></div>
-        </div>
-    </div>
 </div>
-
-<!-- sctipt -->
+<script type="text/javascript" src="webjars/jquery/3.4.1/jquery.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+<!-- script -->
 <script src="js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
-<!-- пагинация статистики-->
-<script th:replace="parts/_table_filter :: filter(${statistic})"></script>
 <!-- график изменения валют-->
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script th:replace="parts/_graph :: graph(${rates})"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </body>
 </html>

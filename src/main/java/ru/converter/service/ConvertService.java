@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.converter.dto.Statistic;
+import ru.converter.dto.StatisticDto;
 import ru.converter.entity.Convert;
 import ru.converter.entity.Currency;
 import ru.converter.entity.Rate;
@@ -93,10 +94,10 @@ public class ConvertService {
     /**
      * Получит статистику за период;
      */
-    public List<Statistic> getStatisticByDateBetween(LocalDate after, LocalDate before) {
-        after = Objects.isNull(after) ? LocalDate.now().minusWeeks(1) : after;
-        before = Objects.isNull(before) ? LocalDate.now() : before;
-        return convertRepo.getStatistic(after, before);
+    public List<Statistic> getStatisticByDateBetween(StatisticDto statisticDto) {
+        statisticDto.setAfter(Objects.isNull(statisticDto.getAfter())?LocalDate.now().minusWeeks(1):statisticDto.getAfter());
+        statisticDto.setBefore(Objects.isNull(statisticDto.getBefore())?LocalDate.now():statisticDto.getBefore());
+        return convertRepo.getStatistic(statisticDto.getAfter(), statisticDto.getBefore());
     }
 
     /**
